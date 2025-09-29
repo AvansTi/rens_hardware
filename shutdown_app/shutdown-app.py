@@ -83,7 +83,7 @@ def shutdown_system():
     
     # Execute shutdown command
     print("Executing shutdown now...")
-    #os.system("sudo shutdown -h now")
+    os.system("sudo shutdown -h now")
 
 
 def check_button():

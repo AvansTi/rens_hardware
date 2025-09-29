@@ -1,0 +1,12 @@
+[Unit]
+Description=Shutdown Service App
+
+[Service]
+Type=idle
+Restart=always
+RestartSec=30
+ExecStart=/bin/bash -c 'cd /opt/shutdown-app/ && python3 shutdown-app.py'
+WorkingDirectory=/opt/shutdown-app
+
+[Install]
+WantedBy=basic.target
