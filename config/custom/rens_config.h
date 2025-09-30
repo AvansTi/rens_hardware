@@ -29,7 +29,7 @@
 #define COUNTS_PER_REV2 6400              // wheel2 encoder's no of ticks per rev
 #define WHEEL_DIAMETER 0.144                // wheel's diameter in meters
 #define LR_WHEELS_DISTANCE 0.271            // distance between left and right wheels
-#define PWM_BITS 10                          // PWM Resolution of the microcontroller
+#define PWM_BITS 8                          // PWM Resolution of the microcontroller
 #define PWM_FREQUENCY 20000                 // PWM Frequency
 
 
@@ -58,7 +58,12 @@
 #define PWM_MIN -PWM_MAX
 
 
+#define SDA_PIN 18 // specify I2C pins
+#define SCL_PIN 19
 
+#define BOARD_INIT { \
+    Wire.begin(SDA_PIN, SCL_PIN); \
+}
 
 
 
