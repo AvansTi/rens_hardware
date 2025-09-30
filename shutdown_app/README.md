@@ -1,5 +1,17 @@
 # How to
 
+Make the directory /opt/shutdown-app
+
+```
+sudo mkdir /opt/shutdown-app
+```
+
+Install the python script into the newly created directory
+
+```
+sudo cp shutdown-app.py /opt/shutdown-app/
+```
+
 Copy the 'shutdown-app.service' to '/lib/systemd/system':
 
 ```
