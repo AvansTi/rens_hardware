@@ -125,12 +125,17 @@ class MPU6050IMU: public IMUInterface
             bool ret;
             accelgyro_.initialize();
             ret = accelgyro_.testConnection();
-           // if(!ret)
-           //     return false;
-
-           // accelgyro_.CalibrateAccel();
-           // accelgyro_.CalibrateGyro();
+            //if(!ret)
+            //    return false;
+            (void)ret; // suppress unused warning
+            calibrate();
             return true;
+        }
+
+        void calibrate()
+        {
+            accelgyro_.CalibrateAccel();
+            accelgyro_.CalibrateGyro();
         }
 
         geometry_msgs__msg__Vector3 readAccelerometer() override

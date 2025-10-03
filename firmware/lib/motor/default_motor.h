@@ -49,11 +49,12 @@ class Generic2: public MotorInterface
     public:
         Generic2(float pwm_frequency, int pwm_bits, bool invert, int pwm_pin, int in_a_pin, int in_b_pin):
             MotorInterface(invert),
-            pwm_frequency_(pwm_frequency),
-            pwm_bits_(pwm_bits),
             in_a_pin_(in_a_pin),
             in_b_pin_(in_b_pin),
-            pwm_pin_(pwm_pin) {}
+            pwm_pin_(pwm_pin),
+            pwm_bits_(pwm_bits),
+            pwm_frequency_(pwm_frequency)
+            {}
 
         void begin()
         {
@@ -107,10 +108,11 @@ class Generic1: public MotorInterface
     public:
         Generic1(float pwm_frequency, int pwm_bits, bool invert, int pwm_pin, int in_pin, int unused=-1):
             MotorInterface(invert),
-            pwm_frequency_(pwm_frequency),
-            pwm_bits_(pwm_bits),
             in_pin_(in_pin),
-            pwm_pin_(pwm_pin) {}
+            pwm_pin_(pwm_pin),
+            pwm_bits_(pwm_bits),
+            pwm_frequency_(pwm_frequency)
+            {}
 
         void begin()
         {
@@ -168,10 +170,11 @@ class BTS7960: public MotorInterface
     public:
         BTS7960(float pwm_frequency, int pwm_bits, bool invert, int unused, int in_a_pin, int in_b_pin):
             MotorInterface(invert),
-            pwm_frequency_(pwm_frequency),
-            pwm_bits_(pwm_bits),
             in_a_pin_(in_a_pin),
-            in_b_pin_(in_b_pin) {}
+            in_b_pin_(in_b_pin),
+            pwm_bits_(pwm_bits),
+            pwm_frequency_(pwm_frequency)
+            {}
 
         void begin()
         {
@@ -186,10 +189,11 @@ class BTS7960: public MotorInterface
 
         BTS7960(float pwm_frequency, int pwm_bits, bool invert, int in_a_pin, int in_b_pin):
             MotorInterface(invert),
-            pwm_frequency_(pwm_frequency),
-            pwm_bits_(pwm_bits),
             in_a_pin_(in_a_pin),
-            in_b_pin_(in_b_pin) {}
+            in_b_pin_(in_b_pin),
+            pwm_bits_(pwm_bits),
+            pwm_frequency_(pwm_frequency)
+            {}
 
         void brake() override
         {
