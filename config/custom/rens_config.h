@@ -62,9 +62,12 @@
 #define SCL_PIN 19
 
 #define BOARD_INIT { \
-    Wire.begin(SDA_PIN, SCL_PIN); \
+    Wire.begin(); \
 }
 
+/* #define BOARD_INIT { \
+     Wire.begin(SDA_PIN, SCL_PIN); \
+ }*/
 
 
 
@@ -80,11 +83,11 @@
 #define MOTOR3_INV false
 #define MOTOR4_INV false
 
-#define MOTOR3_ENCODER_A -1
-#define MOTOR3_ENCODER_B -1
+#define MOTOR3_ENCODER_A 2
+#define MOTOR3_ENCODER_B 2
 
-#define MOTOR4_ENCODER_A -1
-#define MOTOR4_ENCODER_B -1
+#define MOTOR4_ENCODER_A 2
+#define MOTOR4_ENCODER_B 2
 
 #define MOTOR1_IN_B -1 //DON'T TOUCH THIS! This is just a placeholder
 #define MOTOR2_IN_B -1 //DON'T TOUCH THIS! This is just a placeholder

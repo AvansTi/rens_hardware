@@ -26,10 +26,7 @@
 #include "config.h"
 #include "imu.h"
 
-Encoder motor1_encoder(MOTOR1_ENCODER_A, MOTOR1_ENCODER_B, COUNTS_PER_REV1, MOTOR1_ENCODER_INV);
-Encoder motor2_encoder(MOTOR2_ENCODER_A, MOTOR2_ENCODER_B, COUNTS_PER_REV2, MOTOR2_ENCODER_INV);
-Encoder motor3_encoder(MOTOR3_ENCODER_A, MOTOR3_ENCODER_B, COUNTS_PER_REV3, MOTOR3_ENCODER_INV);
-Encoder motor4_encoder(MOTOR4_ENCODER_A, MOTOR4_ENCODER_B, COUNTS_PER_REV4, MOTOR4_ENCODER_INV);
+
 
 Motor motor1_controller(PWM_FREQUENCY, PWM_BITS, MOTOR1_INV, MOTOR1_PWM, MOTOR1_IN_A, MOTOR1_IN_B);
 Motor motor2_controller(PWM_FREQUENCY, PWM_BITS, MOTOR2_INV, MOTOR2_PWM, MOTOR2_IN_A, MOTOR2_IN_B);
@@ -49,7 +46,7 @@ Kinematics kinematics(
 long long int counts_per_rev[4];
 int total_motors = 4;
 Motor *motors[4] = {&motor1_controller, &motor2_controller, &motor3_controller, &motor4_controller};
-Encoder *encoders[4] = {&motor1_encoder, &motor2_encoder, &motor3_encoder, &motor4_encoder};
+Encoder *encoders[4];//= {&motor1_encoder, &motor2_encoder, &motor3_encoder, &motor4_encoder};
 String labels[4] = {"FRONT LEFT - M1: ", "FRONT RIGHT - M2: ", "REAR LEFT - M3: ", "REAR RIGHT - M4: "};
 
 IMU imu;
@@ -58,15 +55,20 @@ bool imu_ok = false;
 
 void setup()
 {
+    if(Kinematics::LINO_BASE == Kinematics::DIFFERENTIAL_DRIVE)
+    {
+        total_motors = 2;
+    }
+
     Serial.begin(9600);
     while (!Serial) {
     }
     Wire.begin();
-    Serial.println("Starting in 5 seconds");
     for(int i = 0; i < 5; i++)
     {
         Serial.print("Starting in ");
         Serial.print(5-i);
+        Serial.print(" seconds");
         for(int ii = 0; ii < 10; ii++)
         {
             Serial.print(".");
@@ -74,6 +76,14 @@ void setup()
         }
         Serial.println();
     }
+    if(total_motors > 0)
+        encoders[0] = new Encoder(MOTOR1_ENCODER_A, MOTOR1_ENCODER_B, COUNTS_PER_REV1, MOTOR1_ENCODER_INV);
+    if(total_motors > 1)
+        encoders[1] = new Encoder(MOTOR2_ENCODER_A, MOTOR2_ENCODER_B, COUNTS_PER_REV2, MOTOR2_ENCODER_INV);
+    if(total_motors > 2)
+        encoders[2] = new Encoder(MOTOR3_ENCODER_A, MOTOR3_ENCODER_B, COUNTS_PER_REV3, MOTOR3_ENCODER_INV);
+    if(total_motors > 3)
+        encoders[3] = new Encoder(MOTOR4_ENCODER_A, MOTOR4_ENCODER_B, COUNTS_PER_REV4, MOTOR4_ENCODER_INV);
 
 }
 
@@ -115,9 +125,10 @@ void testMotor()
     int inc = (PWM_MAX)/100;
     Serial.print("[testMotor] inc: ");
     Serial.println(inc);
-    for(int i = 0; i < 2; i++)
+    for(int i = 0; i < total_motors; i++)
     {
-        Serial.println("[testMotor] Motor i");
+        Serial.print("[testMotor] Motor ");
+        Serial.println(i+1);
         for(int pwm = 0; pwm < pwm_max; pwm+=inc)
         {
             motors[i]->spin(min(pwm, pwm_max));
@@ -203,8 +214,28 @@ void testImu()
 
 void testEncoders()
 {
-    Serial.print("[testMotor] Testing encoders");
-    
+    Serial.println("[testEncoders] Testing encoders");
+    for(int current_motor = 0; current_motor < total_motors; current_motor++)
+    {
+        Serial.print("[testEncoders] Testing encoder ");
+        Serial.println(current_motor+1);
+        delay(50);
 
-    Serial.println("[testMotor] Done");
+
+        motors[current_motor]->spin(PWM_MAX);
+        delay(500);
+
+        for(int i = 0; i < 10; i++)
+        {
+            int rpm = encoders[current_motor]->getRPM();
+            Serial.print("[testEncoders] RPM for motor ");
+            Serial.print(current_motor+1);
+            Serial.print(" : ");
+            Serial.println(rpm);
+            delay(50);
+        }
+        motors[current_motor]->spin(0);
+        delay(50);
+    }
+    Serial.println("[testEncoders] Done");
 }
