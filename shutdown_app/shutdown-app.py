@@ -49,6 +49,11 @@ def setup_gpio():
     GPIO.output(LED_PIN, GPIO.LOW)  # LED off initially
     
     print(f"GPIO initialized - Button: GPIO{BUTTON_PIN}, LED: GPIO{LED_PIN}")
+    for x in range(3):
+        GPIO.output(LED_PIN, GPIO.HIGH)
+        time.sleep(BLINK_INTERVAL)
+        GPIO.output(LED_PIN, GPIO.LOW)
+        time.sleep(BLINK_INTERVAL)
 
 
 def blink_led():

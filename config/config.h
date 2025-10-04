@@ -14,6 +14,10 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#ifdef USE_RENS_CONFIG
+    #include "custom/rens_config.h"
+#endif
+
 #ifdef USE_VATTENKAR_CONFIG
     #include "custom/vattenkar_config.h"
 #endif

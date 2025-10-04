@@ -1,0 +1,1 @@
+pio run --target upload -e rens && pio device monitor -p /dev/ttyACM0 -b 9600
