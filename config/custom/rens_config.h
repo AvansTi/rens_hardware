@@ -38,8 +38,8 @@
 #define MOTOR2_ENCODER_INV false
 
 // INVERT MOTOR DIRECTIONS
-#define MOTOR1_INV false
-#define MOTOR2_INV false
+#define MOTOR1_INV true
+#define MOTOR2_INV true
 
 // ENCODER PINS
 #define MOTOR1_ENCODER_A 14
@@ -48,11 +48,11 @@
 #define MOTOR2_ENCODER_A 16
 #define MOTOR2_ENCODER_B 17
 
-#define MOTOR1_PWM 1 //Pin no 21 is not a PWM pin on Teensy 4.x, you can use pin no 1 inste
-#define MOTOR1_IN_A 3
+#define MOTOR2_PWM 1 //Pin no 21 is not a PWM pin on Teensy 4.x, you can use pin no 1 inste
+#define MOTOR2_IN_A 3
 
-#define MOTOR2_PWM 5
-#define MOTOR2_IN_A 6
+#define MOTOR1_PWM 4
+#define MOTOR1_IN_A 5
 
 #define PWM_MAX pow(2, PWM_BITS) - 1
 #define PWM_MIN -PWM_MAX
