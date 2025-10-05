@@ -12,6 +12,9 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
+// Disable IMU calibration with -D IMU_NO_CALIBRATE as we are just testing the motor
+#define IMU_NO_CALIBRATE
 #include <Arduino.h>
 #include <micro_ros_platformio.h>
 #include <stdio.h>

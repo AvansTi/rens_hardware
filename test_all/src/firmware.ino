@@ -11,6 +11,8 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
+#define IMU_NO_CALIBRATE
 #include <Arduino.h>
 #include <stdio.h>
 #include <micro_ros_platformio.h>
@@ -64,10 +66,10 @@ void setup()
     while (!Serial) {
     }
     Wire.begin();
-    for(int i = 0; i < 5; i++)
+    for(int i = 0; i < 3; i++)
     {
         Serial.print("Starting in ");
-        Serial.print(5-i);
+        Serial.print(3-i);
         Serial.print(" seconds");
         for(int ii = 0; ii < 10; ii++)
         {
@@ -117,37 +119,20 @@ void testLed()
 
 void testMotor()
 {
-    int pwm_max = PWM_MAX; //macro
     Serial.println("[testMotor] Testing motors");
     Serial.print("[testMotor] PWM_MAX: ");
     Serial.println(PWM_MAX);
 
-    int inc = (PWM_MAX)/100;
-    Serial.print("[testMotor] inc: ");
-    Serial.println(inc);
     for(int i = 0; i < total_motors; i++)
     {
         Serial.print("[testMotor] Motor ");
         Serial.println(i+1);
-        for(int pwm = 0; pwm < pwm_max; pwm+=inc)
-        {
-            motors[i]->spin(min(pwm, pwm_max));
-            delay(10);
-        }
-        delay(500);
-        for(int pwm = pwm_max; pwm > -pwm_max; pwm-=inc)
-        {
-            motors[i]->spin(max(pwm, -pwm_max));
-            delay(10);
-        }
-        delay(500);
-        for(int pwm = -pwm_max; pwm < 0; pwm+=inc)
-        {
-            motors[i]->spin(pwm);
-            delay(10);
-        }
-        motors[i]->spin(0);
-        delay(500);
+        accellerate(i, 0, PWM_MAX, 20, 50);
+        delay(50);
+        accellerate(i, PWM_MAX, -PWM_MAX, 20, 50);
+        delay(50);
+        accellerate(i, -PWM_MAX, 0, 20, 50);
+        delay(250);
     }
 
     Serial.println("[testMotor] Done");
@@ -155,87 +140,125 @@ void testMotor()
 
 void testImu()
 {
-  /*  Serial.print("[testMotor] Testing IMU");
-    Serial.println("Initializing IMU...");
+    Serial.println("[testImu] Testing IMU");
+    Serial.println("[testImu] Initializing IMU...");
     auto& mpu2 = (MPU6050IMU&)imu;
     imu_ok = imu.init();
-    while(!imu_ok)
+    if(!imu_ok)
     {
-//        flashLED(3);
-        Serial.println("Initializing again...");
-        Serial.print("DeviceID: ");
+        Serial.println("[testImu] IMU initialization failed!");
+        Serial.print("[testImu] DeviceID: ");
         Serial.println((int)mpu2.deviceId());
-        delay(100);
-        imu_ok = imu.init();
+        return;
     }
-    Serial.println("IMU initialized");
-    Serial.print("Version: ");
+    Serial.println("[testImu] IMU initialized");
+    Serial.print("[testImu] DeviceID: ");
     Serial.println((int)mpu2.deviceId());
-    
 
     imu_msg = imu.getData();
 
-    Serial.write(27);
-    Serial.print("[2J");
-    Serial.write(27);
-    Serial.print("[H");
-    
-    Serial.print("Angular Velocity X:    ");
-    Serial.println(imu_msg.angular_velocity.x);
-    Serial.print("Angular Velocity Y:    ");
-    Serial.println(imu_msg.angular_velocity.y);
-    Serial.print("Angular Velocity Z:    ");
-    Serial.println(imu_msg.angular_velocity.z);
+    Serial.println("[testImu] IMU data:");
+    Serial.println("[testImu] Angular\t\tLinear Accel\t\t\tLinear Accel Cov\t\tOrientation Cov");
+    for(int i = 0; i < 10; i++)
+    {
 
-    Serial.print("Linear accel X:        ");
-    Serial.println(imu_msg.linear_acceleration.x);
-    Serial.print("Linear accel Y:        ");
-    Serial.println(imu_msg.linear_acceleration.y);
-    Serial.print("Linear accel Z:        ");
-    Serial.println(imu_msg.linear_acceleration.z);
-    Serial.print("Linear accel cov 0:    ");
-    Serial.println(imu_msg.linear_acceleration_covariance[0]);
-    Serial.print("Linear accel cov 4:    ");
-    Serial.println(imu_msg.linear_acceleration_covariance[4]);
-    Serial.print("Linear accel cov 8:    ");
-    Serial.println(imu_msg.linear_acceleration_covariance[8]);
+        Serial.print(imu_msg.angular_velocity.x);
+        Serial.write('\t');
+        Serial.print(imu_msg.angular_velocity.y);
+        Serial.write('\t');
+        Serial.print(imu_msg.angular_velocity.z);
+        Serial.write('\t');
+        Serial.write('\t');
 
-    Serial.print("Orientation cov 0:     ");
-    Serial.println(imu_msg.orientation_covariance[0]);
-    Serial.print("Orientation cov 4:     ");
-    Serial.println(imu_msg.orientation_covariance[4]);
-    Serial.print("Orientation cov 8:     ");
-    Serial.println(imu_msg.orientation_covariance[8]);
+        Serial.print(imu_msg.linear_acceleration.x);
+        Serial.write('\t');
+        Serial.print(imu_msg.linear_acceleration.y);
+        Serial.write('\t');
+        Serial.print(imu_msg.linear_acceleration.z);
+        Serial.write('\t');
+        Serial.write('\t');
+        Serial.print(imu_msg.linear_acceleration_covariance[0]);
+        Serial.write('\t');
+        Serial.print(imu_msg.linear_acceleration_covariance[4]);
+        Serial.write('\t');
+        Serial.print(imu_msg.linear_acceleration_covariance[8]);
+        Serial.write('\t');
+        Serial.write('\t');
 
-*/
-    delay(50);
+        Serial.print(imu_msg.orientation_covariance[0]);
+        Serial.write('\t');
+        Serial.print(imu_msg.orientation_covariance[4]);
+        Serial.write('\t');
+        Serial.print(imu_msg.orientation_covariance[8]);
+        Serial.println();
+        delay(100);
+    }
+    Serial.println("[testIMU] Calibrating PID on IMU (can take a while)");
+    Serial.println("[testIMU] Make sure the IMU is stationary during calibration");
+    mpu2.calibrate();
     Serial.println("[testIMU] Done");
 }
 
 void testEncoders()
 {
     Serial.println("[testEncoders] Testing encoders");
+
+    for(int current_motor = 0; current_motor < total_motors; current_motor++)
+        motors[current_motor]->spin(0);
+    delay(750);
+
     for(int current_motor = 0; current_motor < total_motors; current_motor++)
     {
-        Serial.print("[testEncoders] Testing encoder ");
+        Serial.print("[testEncoders] Testing RPM for motor ");
         Serial.println(current_motor+1);
-        delay(50);
+        Serial.println("[testEncoders] Spinning up motor ");
+        accellerate(current_motor, 0, PWM_MAX, 20, 50);
+        delay(100);
+        Serial.println("[testEncoders] Motor is up to speed, reading RPM for 2 seconds ");
 
-
-        motors[current_motor]->spin(PWM_MAX);
-        delay(500);
+        for(int encoder = 0; encoder < total_motors; encoder++)
+            encoders[encoder]->getRPM(); //reset the rpm calculation
+        delay(200);
 
         for(int i = 0; i < 10; i++)
         {
-            int rpm = encoders[current_motor]->getRPM();
-            Serial.print("[testEncoders] RPM for motor ");
-            Serial.print(current_motor+1);
-            Serial.print(" : ");
-            Serial.println(rpm);
-            delay(50);
+            for(int encoder = 0; encoder < total_motors; encoder++)
+            {
+                int rpm = encoders[encoder]->getRPM();
+                Serial.print(encoder+1);
+                Serial.print(": ");
+                Serial.print(rpm);
+                Serial.print("\t");
+            }
+            Serial.println();
+            delay(200);
         }
-        motors[current_motor]->spin(0);
+        accellerate(current_motor, PWM_MAX, 0, 20, 50);
         delay(50);
     }
     Serial.println("[testEncoders] Done");
+}
+
+
+void accellerate(int motor, int start_pwm, int end_pwm, int stepcount, int delay_ms)
+{
+    int step = (end_pwm - start_pwm) / stepcount;
+    if(start_pwm < end_pwm)
+    {
+        for(int pwm = start_pwm; pwm < end_pwm; pwm+=step)
+        {
+            motors[motor]->spin(min(pwm, PWM_MAX));
+            delay(delay_ms);
+        }
+        motors[motor]->spin(end_pwm);
+    }
+    else
+    {
+        for(int pwm = start_pwm; pwm > end_pwm; pwm+=step)
+        {
+            motors[motor]->spin(max(pwm, -PWM_MAX));
+            delay(delay_ms);
+        }
+        motors[motor]->spin(end_pwm);
+    }
 }

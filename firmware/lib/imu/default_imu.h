@@ -128,7 +128,9 @@ class MPU6050IMU: public IMUInterface
             //if(!ret)
             //    return false;
             (void)ret; // suppress unused warning
+#ifndef IMU_NO_CALIBRATE
             calibrate();
+#endif
             return true;
         }
 
