@@ -1,1 +1,2 @@
-pio run --target upload -e rens && pio device monitor -p /dev/ttyACM0
+#pio run --target upload -e rens && pio device monitor -p /dev/ttyACM0
+pio run --target upload -e rens && pio device monitor -p /dev/teensy
