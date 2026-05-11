@@ -1,0 +1,1 @@
+pio run --target upload -e pico  && pio device monitor -p /dev/ttyACM0 -e pico
