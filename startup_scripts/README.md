@@ -1,9 +1,9 @@
 # How to
 
-Copy the 'start_robot.service' to '/lib/systemd/system':
+Copy the 'start_robot.service' to '/etc/systemd/system/':
 
 ```
-sudo cp ./start_robot.service /lib/systemd/system/
+sudo cp ./start_robot.service /etc/systemd/system/
 ```
 
 Check the status of the service:

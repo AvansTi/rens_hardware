@@ -7,7 +7,7 @@ User=rens
 Group=rens
 Restart=on-failure
 RestartSec=30
-ExecStart=/home/rens/rens_hardware/startup_scripts/start_robot.bash
+ExecStart=/bin/bash -lc 'exec /home/rens/rens_hardware/startup_scripts/start_robot.bash'
 WorkingDirectory=/home/rens/rens_hardware/startup_scripts/
 
 [Install]
