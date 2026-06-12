@@ -1,0 +1,14 @@
+[Unit]
+Description=Start Robot
+
+[Service]
+Type=simple
+User=rens
+Group=rens
+Restart=on-failure
+RestartSec=30
+ExecStart=/home/rens/rens_hardware/startup_scripts/start_robot.bash
+WorkingDirectory=/home/rens/rens_hardware/startup_scripts/
+
+[Install]
+WantedBy=multi-user.target
