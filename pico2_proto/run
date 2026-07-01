@@ -1,1 +1,1 @@
-pio run --target upload -e pico  && pio device monitor -p /dev/ttyACM0 -e pico
+pio run --target upload -e pico2  && sleep 5 && pio device monitor -e pico2

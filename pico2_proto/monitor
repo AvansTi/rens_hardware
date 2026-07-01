@@ -1,1 +1,1 @@
-pio device monitor -p /dev/ttyACM0 -e pico2
+pio device monitor -e pico2

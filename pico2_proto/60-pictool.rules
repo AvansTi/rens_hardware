@@ -3,29 +3,12 @@
 
 SUBSYSTEM=="usb", \
     ATTRS{idVendor}=="2e8a", \
-    ATTRS{idProduct}=="0003", \
+    ATTRS{idProduct}=="0003|0009|000a|000f", \
     TAG+="uaccess", \
     MODE="660", \
-    GROUP="plugdev", SYMLINK+="ttyPico2"
+    GROUP="plugdev", SYMLINK+="ttyPico2Boot"
 
-SUBSYSTEM=="usb", \
+KERNEL=="ttyACM*", \
     ATTRS{idVendor}=="2e8a", \
-    ATTRS{idProduct}=="0009", \
-    TAG+="uaccess", \
-    MODE="660", \
-    GROUP="plugdev", SYMLINK+="ttyPico2"
-
-SUBSYSTEM=="usb", \
-    ATTRS{idVendor}=="2e8a", \
-    ATTRS{idProduct}=="000a", \
-    TAG+="uaccess", \
-    MODE="660", \
-    GROUP="plugdev", SYMLINK+="ttyPico2"
-
-SUBSYSTEM=="usb", \
-    ATTRS{idVendor}=="2e8a", \
-    ATTRS{idProduct}=="000f", \
-    TAG+="uaccess", \
-    MODE="660", \
-    GROUP="plugdev", SYMLINK+="ttyPico2"
-
+    ATTRS{idProduct}=="0003|0009|000a|000f", \
+    SYMLINK+="ttyPico2"
