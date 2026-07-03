@@ -5,14 +5,20 @@ Monitors a button on a GPIO pin and initiates shutdown when pressed.
 Controls an LED to indicate shutdown status.
 """
 """
-1: install python3-rpi.gpio
-sudo apt install python3-rpi.gpio
+
+0: remove python3-rpi-gpio if installed
+sudo apt remove python3-rpi-gpio
+
+1: install python3-rpi-lgpio
+sudo apt install python3-rpi-lgpio
 
 2: run as root:
 sudo python3 main.py
 
 3: remove the comment on the line doing the real shutdown ;)
 """
+import signal
+import sys
 import RPi.GPIO as GPIO
 import time
 import os
@@ -32,6 +38,13 @@ DEBOUNCE_TIME = 0.2
 shutdown_initiated = False
 last_button_press = 0
 
+def signal_handler(sig, frame):
+    GPIO.cleanup()
+    sys.exit(0)
+
+def button_pressed_callback(channel):
+    print("Button pressed!")
+    shutdown_system()
 
 def setup_gpio():
     """Initialize GPIO pins"""
@@ -44,6 +57,8 @@ def setup_gpio():
     # Setup button pin with pull-down resistor
     GPIO.setup(BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
     
+    GPIO.add_event_detect(BUTTON_PIN, GPIO.FALLING, callback=button_pressed_callback, bouncetime=100)
+
     # Setup LED pin as output
     GPIO.setup(LED_PIN, GPIO.OUT)
     GPIO.output(LED_PIN, GPIO.LOW)  # LED off initially
@@ -55,6 +70,7 @@ def setup_gpio():
         GPIO.output(LED_PIN, GPIO.LOW)
         time.sleep(BLINK_INTERVAL)
 
+    GPIO.output(LED_PIN, GPIO.HIGH)  # Set LED on
 
 def blink_led():
     """Blink the LED to indicate shutdown in progress"""
@@ -91,53 +107,21 @@ def shutdown_system():
     os.system("sudo shutdown -h now")
 
 
-def check_button():
-    """Check if button is pressed with debouncing"""
-    global last_button_press
-    
-    current_time = time.time()
-    
-    if GPIO.input(BUTTON_PIN) == GPIO.LOW:
-        # Check if enough time has passed since last press (debounce)
-        if current_time - last_button_press > DEBOUNCE_TIME:
-            last_button_press = current_time
-            return True
-    
-    return False
-
-
 def main():
     """Main program loop"""
-    try:
-        setup_gpio()
+    print("Main start")
+
+    setup_gpio()
         
-        print("Shutdown monitor running...")
-        print(f"Press button on GPIO{BUTTON_PIN} to shutdown")
-        print("Press Ctrl+C to exit")
+    print("Shutdown monitor running...")
+    print(f"Press button on GPIO{BUTTON_PIN} to shutdown")
+    print("Press Ctrl+C to exit")
         
-        # Poll the button state
-        while True:
-            if check_button():
-                shutdown_system()
-                # Keep running until actual shutdown
-                while True:
-                    time.sleep(1)
-            
-            time.sleep(0.1)  # Check button every 100ms
-            
-    except KeyboardInterrupt:
-        print("\nProgram interrupted by user")
-    
-    except Exception as e:
-        print(f"Error: {e}")
-        import traceback
-        traceback.print_exc()
-    
-    finally:
-        print("Cleaning up GPIO...")
-        GPIO.cleanup()
-        print("Program terminated")
+
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.pause()
 
 
 if __name__ == "__main__":
     main()
+	

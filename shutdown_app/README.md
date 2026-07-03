@@ -15,7 +15,7 @@ sudo cp shutdown-app.py /opt/shutdown-app/
 Install the script dependencies
 
 ```
-sudo apt-get install python3-rpi.gpio
+sudo apt-get install python3-rpi-lgpio
 ```
 
 Copy the 'shutdown-app.service' to '/lib/systemd/system':
