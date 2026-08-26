@@ -9,6 +9,8 @@ Restart=on-failure
 RestartSec=30
 ExecStart=/bin/bash -lc 'exec /home/rens/rens_hardware/startup_scripts/start_robot.bash'
 WorkingDirectory=/home/rens/rens_hardware/startup_scripts/
+KillMode=control-group
+TimeoutStopSec=10
 
 [Install]
 WantedBy=multi-user.target
